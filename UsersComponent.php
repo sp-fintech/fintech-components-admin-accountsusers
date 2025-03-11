@@ -40,7 +40,7 @@ class UsersComponent extends BaseComponent
 
         $conditions =
             [
-                'conditions'    => '-|user_id|equals|' . $this->access->auth->account()['id'] . '&'
+                'conditions'    => '-|account_id|equals|' . $this->access->auth->account()['id'] . '&'
             ];
 
         $controlActions =
