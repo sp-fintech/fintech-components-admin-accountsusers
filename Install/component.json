@@ -13,7 +13,7 @@
 		"core" : 
 		{
 			"name" : "Core",
-			"version" : "0.0.0-rc.9",
+			"version" : "0.0.0-rc.12",
 			"repo" : "https://github.com/sp-framework/core"
 		},
 		"apptype" : 
@@ -28,12 +28,6 @@
 				"name" : "AccountsUsers",
 				"version" : "0.0.0",
 				"repo" : "https://github.com/sp-fintech/fintech-packages-accounts-accountsusers"
-			},
-			
-			{
-				"name" : "AccountsTransactions",
-				"version" : "0.0.0",
-				"repo" : "https://github.com/sp-fintech/fintech-packages-accounts-accountstransactions"
 			}
 		],
 		"middlewares" : [],
@@ -52,8 +46,7 @@
 			{
 				"patches" : []
 			}
-		},
-		"external" : []
+		}
 	},
 	"menu" : 
 	{
