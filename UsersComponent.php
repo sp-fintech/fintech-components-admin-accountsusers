@@ -133,7 +133,7 @@ class UsersComponent extends BaseComponent
     {
         $this->requestIsPost();
 
-        $this->accountsUsersPackage->update($this->postData());
+        $this->accountsUsersPackage->updateAccountsUser($this->postData());
 
         $this->addResponse(
             $this->accountsUsersPackage->packagesData->responseMessage,
