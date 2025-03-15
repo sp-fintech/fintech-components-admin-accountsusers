@@ -42,19 +42,40 @@ class UsersComponent extends BaseComponent
                     return $this->throwIdNotFound();
                 }
 
-                if (!$user['balances']) {
-                    $user['balances'] = [];
-                }
+                // if (!$user['balances']) {
+                //     $user['balances'] = [];
+                // }
 
                 $user['equity_balance'] =
-                    str_replace('EN_ ', '', (new \NumberFormatter('en_IN', \NumberFormatter::CURRENCY))->formatCurrency($user['equity_balance'], 'en_IN'));
+                    str_replace('EN_ ',
+                                '',
+                                (new \NumberFormatter('en_IN', \NumberFormatter::CURRENCY))
+                                ->formatCurrency($user['equity_balance'], 'en_IN')
+                    );
 
-                if (count($user['balances']) > 0) {
-                    foreach ($user['balances'] as &$balance) {
-                        $balance['amount'] =
-                            str_replace('EN_ ', '', (new \NumberFormatter('en_IN', \NumberFormatter::CURRENCY))->formatCurrency($balance['amount'], 'en_IN'));
-                    }
-                }
+                // if (count($user['balances']) > 0) {
+                //     foreach ($user['balances'] as &$balance) {
+                //         $balance['amount'] =
+                //             str_replace('EN_ ', '', (new \NumberFormatter('en_IN', \NumberFormatter::CURRENCY))->formatCurrency($balance['amount'], 'en_IN'));
+
+                //         if (is_string($balance['used_by'])) {
+                //             $balance['used_by'] = $this->helper->decode($balance['used_by'], true);
+                //         }
+
+                //         if (count($balance['used_by']) > 0) {
+                //             foreach ($balance['used_by'] as &$usedBy) {
+                //                 //Change portfolio IDS to their names, separated by comma
+                //             }
+                //         }
+
+                //         $balance['used_by'] = implode(',', $balance['used_by']);
+
+                //         if ($balance['used_by'] === '') {
+                //             $balance['used_by'] = '-';
+                //         }
+                //     }
+                // }
+
                 $this->view->user = $user;
             }
 
@@ -86,7 +107,11 @@ class UsersComponent extends BaseComponent
                             unset($dataArr[$key]);
                         } else {
                             $data['equity_balance'] = $this->view->currencySymbol .
-                                str_replace('EN_ ', '', (new \NumberFormatter('en_IN', \NumberFormatter::CURRENCY))->formatCurrency($data['equity_balance'], 'en_IN'));
+                                str_replace('EN_ ',
+                                            '',
+                                            (new \NumberFormatter('en_IN', \NumberFormatter::CURRENCY))
+                                            ->formatCurrency($data['equity_balance'], 'en_IN')
+                                );
                         }
                     }
                 }
