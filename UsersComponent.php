@@ -13,6 +13,8 @@ class UsersComponent extends BaseComponent
 
     protected $accountsUsersPackage;
 
+    protected $accountsBalancesPackage;
+
     public function initialize()
     {
         $this->accountsUsersPackage = $this->usePackage(AccountsUsers::class);
@@ -41,40 +43,6 @@ class UsersComponent extends BaseComponent
                 if (!$user) {
                     return $this->throwIdNotFound();
                 }
-
-                // if (!$user['balances']) {
-                //     $user['balances'] = [];
-                // }
-
-                $user['equity_balance'] =
-                    str_replace('EN_ ',
-                                '',
-                                (new \NumberFormatter('en_IN', \NumberFormatter::CURRENCY))
-                                ->formatCurrency($user['equity_balance'], 'en_IN')
-                    );
-
-                // if (count($user['balances']) > 0) {
-                //     foreach ($user['balances'] as &$balance) {
-                //         $balance['amount'] =
-                //             str_replace('EN_ ', '', (new \NumberFormatter('en_IN', \NumberFormatter::CURRENCY))->formatCurrency($balance['amount'], 'en_IN'));
-
-                //         if (is_string($balance['used_by'])) {
-                //             $balance['used_by'] = $this->helper->decode($balance['used_by'], true);
-                //         }
-
-                //         if (count($balance['used_by']) > 0) {
-                //             foreach ($balance['used_by'] as &$usedBy) {
-                //                 //Change portfolio IDS to their names, separated by comma
-                //             }
-                //         }
-
-                //         $balance['used_by'] = implode(',', $balance['used_by']);
-
-                //         if ($balance['used_by'] === '') {
-                //             $balance['used_by'] = '-';
-                //         }
-                //     }
-                // }
 
                 $this->view->user = $user;
             }
@@ -105,13 +73,6 @@ class UsersComponent extends BaseComponent
                     foreach ($dataArr as $key => &$data) {
                         if ($data['account_id'] !== $this->access->auth->account()['id']) {
                             unset($dataArr[$key]);
-                        } else {
-                            $data['equity_balance'] = $this->view->currencySymbol .
-                                str_replace('EN_ ',
-                                            '',
-                                            (new \NumberFormatter('en_IN', \NumberFormatter::CURRENCY))
-                                            ->formatCurrency($data['equity_balance'], 'en_IN')
-                                );
                         }
                     }
                 }
@@ -123,9 +84,9 @@ class UsersComponent extends BaseComponent
             package: $this->accountsUsersPackage,
             postUrl: 'accounts/users/view',
             postUrlParams: $conditions,
-            columnsForTable: ['account_id', 'first_name', 'last_name', 'equity_balance'],
+            columnsForTable: ['account_id', 'first_name', 'last_name'],
             withFilter : true,
-            columnsForFilter : ['first_name', 'last_name', 'equity_balance'],
+            columnsForFilter : ['first_name', 'last_name'],
             controlActions : $controlActions,
             dtNotificationTextFromColumn: 'first_name',
             excludeColumns : ['account_id'],
@@ -164,58 +125,6 @@ class UsersComponent extends BaseComponent
             $this->accountsUsersPackage->packagesData->responseMessage,
             $this->accountsUsersPackage->packagesData->responseCode,
             $this->accountsUsersPackage->packagesData->responseData ?? []
-        );
-    }
-
-    public function addAccountsBalanceAction()
-    {
-        $this->requestIsPost();
-
-        $this->accountsBalancesPackage->addAccountsBalances($this->postData());
-
-        $this->addResponse(
-            $this->accountsBalancesPackage->packagesData->responseMessage,
-            $this->accountsBalancesPackage->packagesData->responseCode,
-            $this->accountsBalancesPackage->packagesData->responseData ?? []
-        );
-    }
-
-    public function updateAccountsBalanceAction()
-    {
-        $this->requestIsPost();
-
-        $this->accountsBalancesPackage->updateAccountsBalances($this->postData());
-
-        $this->addResponse(
-            $this->accountsBalancesPackage->packagesData->responseMessage,
-            $this->accountsBalancesPackage->packagesData->responseCode,
-            $this->accountsBalancesPackage->packagesData->responseData ?? []
-        );
-    }
-
-    public function removeAccountsBalanceAction()
-    {
-        $this->requestIsPost();
-
-        $this->accountsBalancesPackage->removeAccountsBalances($this->postData());
-
-        $this->addResponse(
-            $this->accountsBalancesPackage->packagesData->responseMessage,
-            $this->accountsBalancesPackage->packagesData->responseCode,
-            $this->accountsBalancesPackage->packagesData->responseData ?? []
-        );
-    }
-
-    public function recalculateAccountsBalanceAction()
-    {
-        $this->requestIsPost();
-
-        $this->accountsBalancesPackage->recalculateUserEquity($this->postData());
-
-        $this->addResponse(
-            $this->accountsBalancesPackage->packagesData->responseMessage,
-            $this->accountsBalancesPackage->packagesData->responseCode,
-            $this->accountsBalancesPackage->packagesData->responseData ?? []
         );
     }
 }
