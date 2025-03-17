@@ -38,7 +38,7 @@ class UsersComponent extends BaseComponent
 
         if (isset($this->getData()['id'])) {
             if ($this->getData()['id'] != 0) {
-                $user = $this->accountsUsersPackage->getAccountsUserById((int) $this->getData()['id']);
+                $user = $this->accountsUsersPackage->getById((int) $this->getData()['id']);
 
                 if (!$user) {
                     return $this->throwIdNotFound();
