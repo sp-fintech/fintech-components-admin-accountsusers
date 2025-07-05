@@ -38,11 +38,18 @@ class UsersComponent extends BaseComponent
 
         if (isset($this->getData()['id'])) {
             if ($this->getData()['id'] != 0) {
-                $user = $this->accountsUsersPackage->getById((int) $this->getData()['id']);
+                $user = $this->accountsUsersPackage->getAccountsUserById((int) $this->getData()['id']);
 
                 if (!$user) {
                     return $this->throwIdNotFound();
                 }
+
+                $user['equity_balance'] =
+                    str_replace('EN_ ',
+                                '',
+                                (new \NumberFormatter('en_IN', \NumberFormatter::CURRENCY))
+                                ->formatCurrency($user['equity_balance'], 'en_IN')
+                    );
 
                 $this->view->user = $user;
             }
@@ -73,7 +80,16 @@ class UsersComponent extends BaseComponent
                     foreach ($dataArr as $key => &$data) {
                         if ($data['account_id'] !== $this->access->auth->account()['id']) {
                             unset($dataArr[$key]);
+
+                            continue;
                         }
+
+                        $data['equity_balance'] =
+                            str_replace('EN_ ',
+                                        '',
+                                        (new \NumberFormatter('en_IN', \NumberFormatter::CURRENCY))
+                                        ->formatCurrency($data['equity_balance'], 'en_IN')
+                            );
                     }
                 }
 
@@ -84,13 +100,14 @@ class UsersComponent extends BaseComponent
             package: $this->accountsUsersPackage,
             postUrl: 'accounts/users/view',
             postUrlParams: $conditions,
-            columnsForTable: ['account_id', 'first_name', 'last_name'],
+            columnsForTable: ['account_id', 'first_name', 'last_name', 'equity_balance'],
             withFilter : true,
             columnsForFilter : ['first_name', 'last_name'],
             controlActions : $controlActions,
             dtNotificationTextFromColumn: 'first_name',
             excludeColumns : ['account_id'],
-            dtReplaceColumns: $replaceColumns
+            dtReplaceColumns: $replaceColumns,
+            dtReplaceColumnsTitle : ['equity_balance' => $this->view->currencySymbol . ' Equity Balance']
         );
 
         $this->view->pick('users/list');
@@ -125,6 +142,59 @@ class UsersComponent extends BaseComponent
             $this->accountsUsersPackage->packagesData->responseMessage,
             $this->accountsUsersPackage->packagesData->responseCode,
             $this->accountsUsersPackage->packagesData->responseData ?? []
+        );
+    }
+
+
+    public function addAccountsBalanceAction()
+    {
+        $this->requestIsPost();
+
+        $this->accountsBalancesPackage->addAccountsBalances($this->postData());
+
+        $this->addResponse(
+            $this->accountsBalancesPackage->packagesData->responseMessage,
+            $this->accountsBalancesPackage->packagesData->responseCode,
+            $this->accountsBalancesPackage->packagesData->responseData ?? []
+        );
+    }
+
+    public function updateAccountsBalanceAction()
+    {
+        $this->requestIsPost();
+
+        $this->accountsBalancesPackage->updateAccountsBalances($this->postData());
+
+        $this->addResponse(
+            $this->accountsBalancesPackage->packagesData->responseMessage,
+            $this->accountsBalancesPackage->packagesData->responseCode,
+            $this->accountsBalancesPackage->packagesData->responseData ?? []
+        );
+    }
+
+    public function removeAccountsBalanceAction()
+    {
+        $this->requestIsPost();
+
+        $this->accountsBalancesPackage->removeAccountsBalances($this->postData());
+
+        $this->addResponse(
+            $this->accountsBalancesPackage->packagesData->responseMessage,
+            $this->accountsBalancesPackage->packagesData->responseCode,
+            $this->accountsBalancesPackage->packagesData->responseData ?? []
+        );
+    }
+
+    public function recalculateAccountsBalanceAction()
+    {
+        $this->requestIsPost();
+
+        $this->accountsBalancesPackage->recalculateUserEquity($this->postData());
+
+        $this->addResponse(
+            $this->accountsBalancesPackage->packagesData->responseMessage,
+            $this->accountsBalancesPackage->packagesData->responseCode,
+            $this->accountsBalancesPackage->packagesData->responseData ?? []
         );
     }
 }
