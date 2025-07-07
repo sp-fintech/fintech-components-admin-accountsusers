@@ -36,6 +36,26 @@ class UsersComponent extends BaseComponent
             }
         }
 
+        $enabledCountries = $this->basepackages->geoCountries->isEnabled(null, true);
+
+        $enabledStates = [];
+
+        if ($enabledCountries && count($enabledCountries) > 0) {
+            $enabledCountries = msort($enabledCountries, 'name');
+
+            foreach ($enabledCountries as $enabledCountry) {
+                $states = $this->basepackages->geoStates->searchStatesByCountryId($enabledCountry['id']);
+
+                $states = msort($states, 'name');
+
+                if ($states && count($states) > 0) {
+                    if ($enabledCountry['id'] == '101') {
+                        $enabledStates = $states;
+                    }
+                }
+            }
+        }
+
         if (isset($this->getData()['id'])) {
             if ($this->getData()['id'] != 0) {
                 $user = $this->accountsUsersPackage->getAccountsUserById((int) $this->getData()['id']);
@@ -53,6 +73,10 @@ class UsersComponent extends BaseComponent
 
                 $this->view->user = $user;
             }
+
+            $this->view->countries = $enabledCountries;
+
+            $this->view->states = $enabledStates;
 
             $this->view->pick('users/view');
 
@@ -145,6 +169,21 @@ class UsersComponent extends BaseComponent
         );
     }
 
+    /**
+     * @acl(name=remove)
+     */
+    public function removeAction()
+    {
+        $this->requestIsPost();
+
+        $this->accountsUsersPackage->removeAccountsUser($this->postData()['id']);
+
+        $this->addResponse(
+            $this->accountsUsersPackage->packagesData->responseMessage,
+            $this->accountsUsersPackage->packagesData->responseCode,
+            $this->accountsUsersPackage->packagesData->responseData ?? []
+        );
+    }
 
     public function addAccountsBalanceAction()
     {
